@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+  namespace: default
+data:
+  init.sql: |
+    -- Create database if not exists
+    CREATE DATABASE IF NOT EXISTS employeedb;
+    USE employeedb;
+
+    -- Create employees table
+    CREATE TABLE IF NOT EXISTS employees (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
+        email VARCHAR(150) NOT NULL UNIQUE,
+        department VARCHAR(100) NOT NULL,
+        salary DOUBLE NOT NULL
+    );
+
+    -- Insert sample data (10 records)
+    INSERT INTO employees (first_name, last_name, email, department, salary) VALUES
+    ('Rajesh', 'Kumar', 'rajesh.kumar@nagp.com', 'Engineering', 95000.00),
+    ('Priya', 'Sharma', 'priya.sharma@nagp.com', 'Marketing', 78000.00),
+    ('Amit', 'Patel', 'amit.patel@nagp.com', 'Engineering', 105000.00),
+    ('Sneha', 'Reddy', 'sneha.reddy@nagp.com', 'Human Resources', 72000.00),
+    ('Vikram', 'Singh', 'vikram.singh@nagp.com', 'Sales', 88000.00),
+    ('Anita', 'Desai', 'anita.desai@nagp.com', 'Finance', 92000.00),
+    ('Rahul', 'Verma', 'rahul.verma@nagp.com', 'Engineering', 98000.00),
+    ('Kavita', 'Nair', 'kavita.nair@nagp.com', 'Operations', 85000.00),
+    ('Suresh', 'Iyer', 'suresh.iyer@nagp.com', 'Engineering', 110000.00),
+    ('Deepa', 'Menon', 'deepa.menon@nagp.com', 'Marketing', 81000.00);
+
+    -- Verify data
+    SELECT COUNT(*) as total_employees FROM employees;

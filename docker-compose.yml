@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: employee-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Nagp@2026
+      MYSQL_DATABASE: employeedb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pNagp@2026"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  app:
+    build: .
+    container_name: employee-api
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: employeedb
+      DB_USERNAME: root
+      DB_PASSWORD: Nagp@2026
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge

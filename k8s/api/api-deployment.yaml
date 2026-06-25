@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-api
+  namespace: default
+  labels:
+    app: employee-api
+    tier: backend
+spec:
+  replicas: 4  # 4 pods as per requirement
+  selector:
+    matchLabels:
+      app: employee-api
+      tier: backend
+  strategy:
+    type: RollingUpdate  # Rolling update strategy
+    rollingUpdate:
+      maxSurge: 1        # Maximum 1 extra pod during update
+      maxUnavailable: 1  # Maximum 1 pod unavailable during update
+  template:
+    metadata:
+      labels:
+        app: employee-api
+        tier: backend
+    spec:
+      containers:
+      - name: employee-api
+        image: goyalpankaj/nagp-kubernetes-devops-assignment:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        # Database configuration from ConfigMap
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: DB_NAME
+        - name: DB_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: DB_USERNAME
+        # Database password from Secret
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-secret
+              key: DB_PASSWORD
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

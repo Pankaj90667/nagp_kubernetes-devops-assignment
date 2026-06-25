@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: default
+data:
+  # Database connection configuration
+  DB_HOST: "mysql-service"
+  DB_PORT: "3306"
+  DB_NAME: "employeedb"
+  DB_USERNAME: "root"
